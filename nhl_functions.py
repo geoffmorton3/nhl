@@ -3,7 +3,7 @@ import sqlite3
 import hockey_scraper as hs
 import psutil as ps
 
-path = 'C:/Users/geoff/Documents/GitHub/nhl'
+path = 'C:/Users/geoff/Documents/GitHub/Py/nhl'
 
 def scrape_date_to_db(dt1,dt2):
     hs.scrape_date_range(dt1,dt2,True,docs_dir=path)
@@ -24,6 +24,7 @@ def scrape_date_to_db(dt1,dt2):
     
         conn.commit()
         conn.close()
+        
         print("DB")
         player_game()
         print("Player Game")
@@ -43,6 +44,7 @@ def scrape_date_to_db(dt1,dt2):
     
 def player_game():
     conn = sqlite3.connect(path + '/nhl.db')
+    c = conn.cursor()
     
     sql = '''
     select distinct
@@ -57,6 +59,10 @@ def player_game():
     out = pd.read_sql_query(sql,conn)
     
     out.to_sql('player_game',con=conn,if_exists='append')
+    
+    c.execute("DROP TABLE IF EXISTS raw_player_game")
+    conn.commit()
+    out.to_sql('raw_player_game',con=conn)
     
     conn.commit()
     conn.close()
@@ -1742,7 +1748,7 @@ def player_game_raw_stats():
         case when b.event = 'SHOT_TAKE' then b.cnt else 0 end as shot_take,
         case when b.event = 'TAKE_AWAY' then b.cnt else 0 end as take_away
     from
-        player_game a
+        raw_player_game a
     inner join
         player_game_actions b
         on a.game_id = b.game_id and
@@ -1777,7 +1783,7 @@ def player_game_raw_stats():
         case when c.event = 'TAKE_AWAY_AG' then c.cnt else 0 end as take_away_ag_on
         
     from
-        player_game a
+        raw_player_game a
     inner join
         player_game_events c
         on a.game_id = c.game_id and
@@ -1812,7 +1818,7 @@ def player_game_raw_stats():
         case when d.event = 'TAKE_AWAY_AG' then d.cnt else 0 end as take_away_ag_off
         
     from
-        player_game a
+        raw_player_game a
     inner join
         player_game_events_off d
         on a.game_id = d.game_id and
@@ -1831,7 +1837,7 @@ def player_game_raw_stats():
         e.sec_played,
         (3600 - e.sec_played) as sec_off        
     from
-        player_game a
+        raw_player_game a
     inner join
         player_game_shifts e
         on a.game_id = e.game_id and
