@@ -1,8 +1,9 @@
 import pandas as pd
 import sqlite3
 import hockey_scraper as hs
+import psutil as ps
 
-path = 'C:/Users/geoff/Documents/GitHub/Py/nhl'
+path = 'C:/Users/geoff/Documents/GitHub/nhl'
 
 def scrape_date_to_db(dt1,dt2):
     hs.scrape_date_range(dt1,dt2,True,docs_dir=path)
@@ -10,26 +11,38 @@ def scrape_date_to_db(dt1,dt2):
         df_pbp = pd.read_csv(path+'/nhl_pbp'+dt1+'--'+dt2+'.csv')
         df_shft = pd.read_csv(path+'/nhl_shifts'+dt1+'--'+dt2+'.csv')
         
-        conn = sqlite3.connect('C:/Users/geoff/Documents/GitHub/Py/nhl.db')
+        conn = sqlite3.connect(path + '/nhl.db')
+        c = conn.cursor()
+        c.execute("DROP TABLE IF EXISTS raw_pbp")
+        conn.commit()
+        c.execute("DROP TABLE IF EXISTS raw_shift")
+        conn.commit()
+        
         
         df_pbp.to_sql('raw_pbp',con=conn,if_exists='replace')
         df_shft.to_sql('raw_shift',con=conn,if_exists='replace')
     
         conn.commit()
         conn.close()
-        
+        print("DB")
         player_game()
+        print("Player Game")
         player_game_shifts()
+        print("Player Shifts")
         player_game_events()
+        print("Game Events")
         player_game_events_off()
+        print("Game Events Off")
         player_game_actions()    
+        print("Player Actions")
         player_game_raw_stats()
+        print("Raw Stats")
         print("Successfully added games between " + dt1 + " and " + dt2)
     except FileNotFoundError:
         print("No Games between " + dt1 + " and " + dt2)
     
 def player_game():
-    conn = sqlite3.connect('C:/Users/geoff/Documents/GitHub/Py/nhl.db')
+    conn = sqlite3.connect(path + '/nhl.db')
     
     sql = '''
     select distinct
@@ -51,7 +64,7 @@ def player_game():
     #return out
 
 def player_game_shifts():
-    conn = sqlite3.connect('C:/Users/geoff/Documents/GitHub/Py/nhl.db')
+    conn = sqlite3.connect(path + '/nhl.db')
     
     sql = '''
     select
@@ -79,7 +92,7 @@ def player_game_shifts():
     #return out
 
 def player_game_events():
-    conn = sqlite3.connect('C:/Users/geoff/Documents/GitHub/Py/nhl.db')
+    conn = sqlite3.connect(path + '/nhl.db')
     
     sql = '''
     select
@@ -723,7 +736,7 @@ def player_game_events():
     #return out
 
 def player_game_events_off():
-    conn = sqlite3.connect('C:/Users/geoff/Documents/GitHub/Py/nhl.db')
+    conn = sqlite3.connect(path + '/nhl.db')
     
     sql = '''
     select
@@ -1367,7 +1380,7 @@ def player_game_events_off():
     #return out
 
 def player_game_actions():
-    conn = sqlite3.connect('C:/Users/geoff/Documents/GitHub/Py/nhl.db')
+    conn = sqlite3.connect(path + '/nhl.db')
     
     sql = '''
     select 
@@ -1705,7 +1718,7 @@ def player_game_actions():
     #return out
 
 def player_game_raw_stats():
-    conn = sqlite3.connect('C:/Users/geoff/Documents/GitHub/Py/nhl.db')
+    conn = sqlite3.connect(path + '/nhl.db')
     
     sql = '''
     select
@@ -1727,8 +1740,23 @@ def player_game_raw_stats():
         case when b.event = 'PENL_TAKE' then b.cnt else 0 end as penl_take,
         case when b.event = 'SHOT_BLOCKED' then b.cnt else 0 end as shot_blocked,
         case when b.event = 'SHOT_TAKE' then b.cnt else 0 end as shot_take,
-        case when b.event = 'TAKE_AWAY' then b.cnt else 0 end as take_away,
-        
+        case when b.event = 'TAKE_AWAY' then b.cnt else 0 end as take_away
+    from
+        player_game a
+    inner join
+        player_game_actions b
+        on a.game_id = b.game_id and
+        a.player_id = b.player_id
+    '''
+    
+    out1 = pd.read_sql_query(sql,conn).groupby(['game_id','team','player','player_id'],sort=False).max().reset_index()
+    
+    sql = '''
+    select
+        a.game_id,
+        a.team,
+        a.player,
+        a.player_id,        
         case when c.event = 'BLOCKED_SHOT' then c.cnt else 0 end as blocked_shot_on,
         case when c.event = 'FAC_LOSS' then c.cnt else 0 end as fac_loss_on,
         case when c.event = 'FAC_WON' then c.cnt else 0 end as fac_won_on,
@@ -1746,7 +1774,23 @@ def player_game_raw_stats():
         case when c.event = 'SHOT_BLOCKED' then c.cnt else 0 end as shot_blocked_on,
         case when c.event = 'SHOT_TAKE' then c.cnt else 0 end as shot_take_on,
         case when c.event = 'TAKE_AWAY' then c.cnt else 0 end as take_away_on,
-        case when c.event = 'TAKE_AWAY_AG' then c.cnt else 0 end as take_away_ag_on,
+        case when c.event = 'TAKE_AWAY_AG' then c.cnt else 0 end as take_away_ag_on
+        
+    from
+        player_game a
+    inner join
+        player_game_events c
+        on a.game_id = c.game_id and
+        a.player_id = c.player_id
+    '''
+    out2 = pd.read_sql_query(sql,conn).groupby(['game_id','team','player','player_id'],sort=False).max().reset_index()
+    
+    sql = '''
+    select
+        a.game_id,
+        a.team,
+        a.player,
+        a.player_id,
         
         case when d.event = 'BLOCKED_SHOT' then d.cnt else 0 end as blocked_shot_off,
         case when d.event = 'FAC_LOSS' then d.cnt else 0 end as fac_loss_off,
@@ -1765,34 +1809,39 @@ def player_game_raw_stats():
         case when d.event = 'SHOT_BLOCKED' then d.cnt else 0 end as shot_blocked_off,
         case when d.event = 'SHOT_TAKE' then d.cnt else 0 end as shot_take_off,
         case when d.event = 'TAKE_AWAY' then d.cnt else 0 end as take_away_off,
-        case when d.event = 'TAKE_AWAY_AG' then d.cnt else 0 end as take_away_ag_off,
-        
-        e.shifts,
-        e.sec_played,
-        (3600 - e.sec_played) as sec_off
-        
+        case when d.event = 'TAKE_AWAY_AG' then d.cnt else 0 end as take_away_ag_off
         
     from
         player_game a
     inner join
-        player_game_actions b
-        on a.game_id = b.game_id and
-        a.player_id = b.player_id
-    inner join
-        player_game_events c
-        on a.game_id = c.game_id and
-        a.player_id = c.player_id
-    inner join
         player_game_events_off d
         on a.game_id = d.game_id and
         a.player_id = d.player_id
+    '''
+    
+    out3 = pd.read_sql_query(sql,conn).groupby(['game_id','team','player','player_id'],sort=False).max().reset_index()
+    
+    sql = '''
+    select
+        a.game_id,
+        a.team,
+        a.player,
+        a.player_id,        
+        e.shifts,
+        e.sec_played,
+        (3600 - e.sec_played) as sec_off        
+    from
+        player_game a
     inner join
         player_game_shifts e
         on a.game_id = e.game_id and
         a.player_id = e.player_id
     '''
+    out4 = pd.read_sql_query(sql,conn).groupby(['game_id','team','player','player_id'],sort=False).max().reset_index()
     
-    out = pd.read_sql_query(sql,conn).groupby(['game_id','team','player','player_id'],sort=False).max().reset_index()
+    out = out4.merge(out1,how='left',left_on=['game_id','team','player','player_id'],right_on=['game_id','team','player','player_id'])
+    out = out.merge(out2,how='left',left_on=['game_id','team','player','player_id'],right_on=['game_id','team','player','player_id'])
+    out = out.merge(out3,how='left',left_on=['game_id','team','player','player_id'],right_on=['game_id','team','player','player_id'])
     
     out.to_sql('player_game_raw_stats',con=conn,if_exists='append')
 

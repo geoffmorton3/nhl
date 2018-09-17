@@ -1,6 +1,10 @@
 import nhl_functions as nhl
+import pandas as pd
 
-nhl.scrape_date_to_db('2016-10-12','2016-10-13')
+daterange = pd.date_range('2016-02-20','2016-04-10')
+for dt in daterange:
+    nhl.scrape_date_to_db(dt.strftime("%Y-%m-%d"),dt.strftime("%Y-%m-%d"))
+    
 
 #conn = sqlite3.connect('C:/Users/geoff/Documents/GitHub/Py/nhl.db')
 #out = pd.read_sql_query("select * from player_game_raw_stats",conn)
