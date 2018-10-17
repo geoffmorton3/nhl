@@ -3,7 +3,7 @@ import sqlite3
 import hockey_scraper as hs
 import psutil as ps
 
-path = 'C:/Users/geoff/Documents/GitHub/Py/nhl'
+path = 'C:/Users/geoff/Documents/GitHub/nhl'
 
 def scrape_date_to_db(dt1,dt2):
     hs.scrape_date_range(dt1,dt2,True,docs_dir=path)
@@ -48,6 +48,7 @@ def player_game():
     
     sql = '''
     select distinct
+        Date as date,
         game_id as game_id,
         team as team,
         player as player,
@@ -74,6 +75,7 @@ def player_game_shifts():
     
     sql = '''
     select
+        Date as date,
         game_id as game_id,
         team as team,
         player as player,
@@ -83,6 +85,7 @@ def player_game_shifts():
     from
         raw_shift
     group by
+        Date,
         game_id,
         team,
         player,
@@ -102,6 +105,7 @@ def player_game_events():
     
     sql = '''
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -130,6 +134,7 @@ def player_game_events():
         b.event = 'BLOCK' and
         a.team <> b.ev_team
     group by
+        a.date,
         a.game_id,
         a.team,
         a.player,
@@ -137,6 +142,7 @@ def player_game_events():
         "BLOCKED_SHOT"   
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -165,6 +171,7 @@ def player_game_events():
         b.event = 'BLOCK' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -172,6 +179,7 @@ def player_game_events():
         "SHOT_BLOCKED" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -200,6 +208,7 @@ def player_game_events():
         b.event = 'FAC' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -207,6 +216,7 @@ def player_game_events():
         "FAC_WON" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -235,6 +245,7 @@ def player_game_events():
         b.event = 'FAC' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -242,6 +253,7 @@ def player_game_events():
         "FAC_LOSS" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -270,6 +282,7 @@ def player_game_events():
         b.event = 'GIVE' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -277,6 +290,7 @@ def player_game_events():
         "GIVEAWAY" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -305,6 +319,7 @@ def player_game_events():
         b.event = 'GIVE' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -312,6 +327,7 @@ def player_game_events():
         "GIVEAWAY_AG" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -340,6 +356,7 @@ def player_game_events():
         b.event = 'GOAL' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -347,6 +364,7 @@ def player_game_events():
         "GOAL_SCORE" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -375,6 +393,7 @@ def player_game_events():
         b.event = 'GOAL' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -382,6 +401,7 @@ def player_game_events():
         "GOAL_AGAINST" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -410,6 +430,7 @@ def player_game_events():
         b.event = 'HIT' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -417,6 +438,7 @@ def player_game_events():
         "HIT_GIVE" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -445,6 +467,7 @@ def player_game_events():
         b.event = 'HIT' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -452,6 +475,7 @@ def player_game_events():
         "HIT_TAKE" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -480,6 +504,7 @@ def player_game_events():
         b.event = 'MISS' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -487,6 +512,7 @@ def player_game_events():
         "MISS_SHOT" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -515,6 +541,7 @@ def player_game_events():
         b.event = 'MISS' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -522,6 +549,7 @@ def player_game_events():
         "MISS_SHOT_AG"
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -550,6 +578,7 @@ def player_game_events():
         b.event = 'PENL' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -557,6 +586,7 @@ def player_game_events():
         "PENL_TAKE"
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -585,6 +615,7 @@ def player_game_events():
         b.event = 'PENL' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -592,6 +623,7 @@ def player_game_events():
         "PENL_DRAW"
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -620,6 +652,7 @@ def player_game_events():
         b.event = 'SHOT' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -627,6 +660,7 @@ def player_game_events():
         "SHOT_TAKE"
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -655,6 +689,7 @@ def player_game_events():
         b.event = 'SHOT' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -662,6 +697,7 @@ def player_game_events():
         "SHOT_AG"
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -690,6 +726,7 @@ def player_game_events():
         b.event = 'TAKE' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -697,6 +734,7 @@ def player_game_events():
         "TAKE_AWAY"
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -725,6 +763,7 @@ def player_game_events():
         b.event = 'TAKE' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -746,6 +785,7 @@ def player_game_events_off():
     
     sql = '''
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -774,6 +814,7 @@ def player_game_events_off():
         b.event = 'BLOCK' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -781,6 +822,7 @@ def player_game_events_off():
         "BLOCKED_SHOT"   
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -809,6 +851,7 @@ def player_game_events_off():
         b.event = 'BLOCK' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -816,6 +859,7 @@ def player_game_events_off():
         "SHOT_BLOCKED" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -844,6 +888,7 @@ def player_game_events_off():
         b.event = 'FAC' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -851,6 +896,7 @@ def player_game_events_off():
         "FAC_WON" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -879,6 +925,7 @@ def player_game_events_off():
         b.event = 'FAC' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -886,6 +933,7 @@ def player_game_events_off():
         "FAC_LOSS" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -914,6 +962,7 @@ def player_game_events_off():
         b.event = 'GIVE' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -921,6 +970,7 @@ def player_game_events_off():
         "GIVEAWAY" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -949,6 +999,7 @@ def player_game_events_off():
         b.event = 'GIVE' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -956,6 +1007,7 @@ def player_game_events_off():
         "GIVEAWAY_AG" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -984,6 +1036,7 @@ def player_game_events_off():
         b.event = 'GOAL' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -991,6 +1044,7 @@ def player_game_events_off():
         "GOAL_SCORE" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -1019,6 +1073,7 @@ def player_game_events_off():
         b.event = 'GOAL' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -1026,6 +1081,7 @@ def player_game_events_off():
         "GOAL_AGAINST" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -1054,6 +1110,7 @@ def player_game_events_off():
         b.event = 'HIT' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -1061,6 +1118,7 @@ def player_game_events_off():
         "HIT_GIVE" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -1089,6 +1147,7 @@ def player_game_events_off():
         b.event = 'HIT' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -1096,6 +1155,7 @@ def player_game_events_off():
         "HIT_TAKE" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -1124,6 +1184,7 @@ def player_game_events_off():
         b.event = 'MISS' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -1131,6 +1192,7 @@ def player_game_events_off():
         "MISS_SHOT" 
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -1159,6 +1221,7 @@ def player_game_events_off():
         b.event = 'MISS' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -1166,6 +1229,7 @@ def player_game_events_off():
         "MISS_SHOT_AG"
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -1194,6 +1258,7 @@ def player_game_events_off():
         b.event = 'PENL' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -1201,6 +1266,7 @@ def player_game_events_off():
         "PENL_TAKE"
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -1229,6 +1295,7 @@ def player_game_events_off():
         b.event = 'PENL' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -1236,6 +1303,7 @@ def player_game_events_off():
         "PENL_DRAW"
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -1264,6 +1332,7 @@ def player_game_events_off():
         b.event = 'SHOT' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -1271,6 +1340,7 @@ def player_game_events_off():
         "SHOT_TAKE"
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -1299,6 +1369,7 @@ def player_game_events_off():
         b.event = 'SHOT' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -1306,6 +1377,7 @@ def player_game_events_off():
         "SHOT_AG"
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -1334,6 +1406,7 @@ def player_game_events_off():
         b.event = 'TAKE' and
         a.team = b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -1341,6 +1414,7 @@ def player_game_events_off():
         "TAKE_AWAY"
     UNION
     select
+        a.Date as date,
         a.game_id as game_id,
         a.team as team,
         a.player as player,
@@ -1369,6 +1443,7 @@ def player_game_events_off():
         b.event = 'TAKE' and
         a.team <> b.ev_team
     group by
+        a.Date,
         a.game_id,
         a.team,
         a.player,
@@ -1390,6 +1465,7 @@ def player_game_actions():
     
     sql = '''
     select 
+        date as date,
         game_id as game_id,
         case when away_team = ev_team then home_team else away_team end as team,
         p1_name as player,
@@ -1401,6 +1477,7 @@ def player_game_actions():
     where
         event = 'BLOCK'
     group by
+        date,
         game_id,
         case when away_team = ev_team then home_team else away_team end,
         p1_name,
@@ -1412,6 +1489,7 @@ def player_game_actions():
     
     sql = '''
     select 
+        date as date,
         game_id as game_id,
         ev_team as team,
         p2_name as player,
@@ -1423,6 +1501,7 @@ def player_game_actions():
     where
         event = 'BLOCK'
     group by
+        date,
         game_id,
         ev_team,
         p2_name,
@@ -1434,6 +1513,7 @@ def player_game_actions():
     
     sql = '''
     select 
+        date as date,
         game_id as game_id,
         ev_team as team,
         p1_name as player,
@@ -1445,6 +1525,7 @@ def player_game_actions():
     where
         event = 'FAC'
     group by
+        date,
         game_id,
         ev_team,
         p1_name,
@@ -1456,6 +1537,7 @@ def player_game_actions():
     
     sql = '''
     select 
+        date as date,
         game_id as game_id,
         case when away_team = ev_team then home_team else away_team end as team,
         p2_name as player,
@@ -1467,6 +1549,7 @@ def player_game_actions():
     where
         event = 'FAC'
     group by
+        date,
         game_id,
         case when away_team = ev_team then home_team else away_team end,
         p2_name,
@@ -1478,6 +1561,7 @@ def player_game_actions():
 
     sql = '''
     select 
+        date as date,
         game_id as game_id,
         ev_team as team,
         p1_name as player,
@@ -1489,6 +1573,7 @@ def player_game_actions():
     where
         event = 'GIVE'
     group by
+        date,
         game_id,
         ev_team,
         p1_name,
@@ -1500,6 +1585,7 @@ def player_game_actions():
     
     sql = '''
     select 
+        date as date,
         game_id as game_id,
         ev_team as team,
         p1_name as player,
@@ -1511,6 +1597,7 @@ def player_game_actions():
     where
         event = 'GOAL'
     group by
+        date,
         game_id,
         ev_team,
         p1_name,
@@ -1522,6 +1609,7 @@ def player_game_actions():
   
     sql = '''
     select 
+        date as date,
         game_id as game_id,
         ev_team as team,
         p2_name as player,
@@ -1534,6 +1622,7 @@ def player_game_actions():
         event = 'GOAL' and
         p2_name is not null
     group by
+        date,
         game_id,
         ev_team,
         p2_name,
@@ -1545,6 +1634,7 @@ def player_game_actions():
 
     sql = '''
     select 
+        date as date,
         game_id as game_id,
         ev_team as team,
         p3_name as player,
@@ -1557,6 +1647,7 @@ def player_game_actions():
         event = 'GOAL' and
         p3_name is not null
     group by
+        date,
         game_id,
         ev_team,
         p3_name,
@@ -1568,6 +1659,7 @@ def player_game_actions():
     
     sql = '''
     select 
+        date as date,
         game_id as game_id,
         ev_team as team,
         p1_name as player,
@@ -1579,6 +1671,7 @@ def player_game_actions():
     where
         event = 'HIT' 
     group by
+        date,
         game_id,
         ev_team,
         p1_name,
@@ -1590,6 +1683,7 @@ def player_game_actions():
     
     sql = '''
     select 
+        date as date,
         game_id as game_id,
         case when away_team = ev_team then home_team else away_team end as team,
         p2_name as player,
@@ -1601,6 +1695,7 @@ def player_game_actions():
     where
         event = 'HIT'
     group by
+        date,
         game_id,
         case when away_team = ev_team then home_team else away_team end,
         p2_name,
@@ -1612,6 +1707,7 @@ def player_game_actions():
     
     sql = '''
     select 
+        date as date,
         game_id as game_id,
         ev_team as team,
         p1_name as player,
@@ -1623,6 +1719,7 @@ def player_game_actions():
     where
         event = 'MISS' 
     group by
+        date,
         game_id,
         ev_team,
         p1_name,
@@ -1633,6 +1730,7 @@ def player_game_actions():
     
     sql = '''
     select 
+        date as date,
         game_id as game_id,
         ev_team as team,
         p1_name as player,
@@ -1644,6 +1742,7 @@ def player_game_actions():
     where
         event = 'PENL' 
     group by
+        date,
         game_id,
         ev_team,
         p1_name,
@@ -1654,6 +1753,7 @@ def player_game_actions():
     
     sql = '''
     select 
+        date as date,
         game_id as game_id,
         case when away_team = ev_team then home_team else away_team end as team,
         p2_name as player,
@@ -1666,6 +1766,7 @@ def player_game_actions():
         event = 'PENL' and
         p2_name is not null
     group by
+        date,
         game_id,
         case when away_team = ev_team then home_team else away_team end,
         p2_name,
@@ -1676,6 +1777,7 @@ def player_game_actions():
     
     sql = '''
     select 
+        date as date,
         game_id as game_id,
         ev_team as team,
         p1_name as player,
@@ -1687,6 +1789,7 @@ def player_game_actions():
     where
         event = 'SHOT' 
     group by
+        date,
         game_id,
         ev_team,
         p1_name,
@@ -1697,6 +1800,7 @@ def player_game_actions():
     
     sql = '''
     select 
+        date as date,
         game_id as game_id,
         ev_team as team,
         p1_name as player,
@@ -1708,6 +1812,7 @@ def player_game_actions():
     where
         event = 'TAKE' 
     group by
+        date,
         game_id,
         ev_team,
         p1_name,
@@ -1728,6 +1833,7 @@ def player_game_raw_stats():
     
     sql = '''
     select
+        a.date,
         a.game_id,
         a.team,
         a.player,
@@ -1759,6 +1865,7 @@ def player_game_raw_stats():
     
     sql = '''
     select
+        a.date,
         a.game_id,
         a.team,
         a.player,
@@ -1793,6 +1900,7 @@ def player_game_raw_stats():
     
     sql = '''
     select
+        a.date,
         a.game_id,
         a.team,
         a.player,
@@ -1829,6 +1937,7 @@ def player_game_raw_stats():
     
     sql = '''
     select
+        a.date,
         a.game_id,
         a.team,
         a.player,
@@ -1843,11 +1952,11 @@ def player_game_raw_stats():
         on a.game_id = e.game_id and
         a.player_id = e.player_id
     '''
-    out4 = pd.read_sql_query(sql,conn).groupby(['game_id','team','player','player_id'],sort=False).max().reset_index()
+    out4 = pd.read_sql_query(sql,conn).groupby(['date','game_id','team','player','player_id'],sort=False).max().reset_index()
     
-    out = out4.merge(out1,how='left',left_on=['game_id','team','player','player_id'],right_on=['game_id','team','player','player_id'])
-    out = out.merge(out2,how='left',left_on=['game_id','team','player','player_id'],right_on=['game_id','team','player','player_id'])
-    out = out.merge(out3,how='left',left_on=['game_id','team','player','player_id'],right_on=['game_id','team','player','player_id'])
+    out = out4.merge(out1,how='left',left_on=['date','game_id','team','player','player_id'],right_on=['date','game_id','team','player','player_id'])
+    out = out.merge(out2,how='left',left_on=['date','game_id','team','player','player_id'],right_on=['date','game_id','team','player','player_id'])
+    out = out.merge(out3,how='left',left_on=['date','game_id','team','player','player_id'],right_on=['date','game_id','team','player','player_id'])
     
     out.to_sql('player_game_raw_stats',con=conn,if_exists='append')
 
@@ -1855,3 +1964,104 @@ def player_game_raw_stats():
     conn.close()
     
     #return out
+    
+def train_model(dt):
+    
+        
+    path = 'C:/Users/geoff/Documents/GitHub/nhl'
+    conn = sqlite3.connect(path + '/nhl.db')
+
+    sql = '''
+    select distinct * from player_game_raw_stats where shifts >= 3 and sec_played <= 2000 and date < %s
+    '''%(dt)
+    
+    df = pd.read_sql_query(sql,conn)
+    df2 = df.iloc[:,9:].div(df['sec_played'],axis=0)
+    df3 = df.iloc[:,1:6]
+    df4 = df3.merge(df2,how='inner',left_index=True,right_index=True)
+    df5 = df4.groupby(['date','game_id','team'],sort=False).mean().reset_index().drop(columns=['player_id'])
+    #date = df5['date']
+    #gid = df5['game_id']
+    #team = df5['team']
+    #df5 = df5.drop(['game_id'],axis=1)
+    #df6 = df5.groupby(['team']).transform(lambda x: x.expanding().mean().shift()).add_prefix('exp_')
+    #df6['date'] = date
+    #df6['game_id'] = gid
+    #df6['team'] = team
+    
+    df7 = df5.merge(df5,how='inner',left_on=['date','game_id'],right_on=['date','game_id'])
+    df8 = df7[~(df7['team_x'] == df7['team_y'])]
+    df9 = df8.drop_duplicates(subset=['date','game_id'])
+    
+    
+    sql = '''
+    select * from player_game_raw_stats
+    '''
+    
+    d = pd.read_sql_query(sql,conn)
+    d2 = d.groupby(['date','game_id'],sort=False).sum().reset_index()
+    d3 = d2[['date','game_id','goal_score']]
+    
+    df10 = d3.merge(df9,how='inner',left_on=['date','game_id'],right_on=['date','game_id']).drop(columns=['date','game_id','team_x','team_y'])    
+    
+    import numpy as np
+    import matplotlib.pyplot as plt
+    
+    from sklearn import ensemble
+    from sklearn import datasets
+    from sklearn.utils import shuffle
+    from sklearn.metrics import mean_squared_error
+    from sklearn.model_selection import train_test_split
+    
+    df10 = df10.drop(['goal_assist1_x','goal_assist1_y','goal_assist2_x','goal_assist2_y','goal_score_x','goal_score_y','goal_score_on_x','goal_score_on_y','goal_against_on_x','goal_against_on_y','goal_against_off_x','goal_against_off_y','goal_score_off_x','goal_score_off_y'],axis=1)
+    df10 = df10.fillna(0)
+    train, test = train_test_split(df10, test_size=0.2)
+    x_train = train.iloc[:,1:]
+    y_train = train.iloc[:,0]
+    x_test = test.iloc[:,1:]
+    y_test = test.iloc[:,0]
+    
+    params = {'n_estimators': 500, 'max_depth': 4, 'min_samples_split': 2,
+              'learning_rate': 0.01, 'loss': 'ls'}
+    clf = ensemble.GradientBoostingRegressor(**params)
+    
+    clf.fit(x_train, y_train)
+    mse = mean_squared_error(y_test, clf.predict(x_test))
+    print("MSE: %.4f" % mse)
+    
+    # compute test set deviance
+    test_score = np.zeros((params['n_estimators'],), dtype=np.float64)
+    
+    for i, y_pred in enumerate(clf.staged_predict(x_test)):
+        test_score[i] = clf.loss_(y_test, y_pred)
+    
+    y_pred=clf.predict(x_test)
+    
+    z = y_pred - np.mean(y_pred)
+    
+    out = np.column_stack((y_test,y_pred,z))
+    out = out[out[:,2].argsort()]
+    
+    return clf
+    
+    
+    
+#    from sklearn.preprocessing import StandardScaler
+## Separating out the features
+#x = df6.iloc[:, 1:].values
+## Separating out the target
+#y = df6.loc[:,['team']].values
+#
+#x = StandardScaler().fit_transform(x)
+#
+#from sklearn.decomposition import PCA
+#pca = PCA(n_components=2)
+#principalComponents = pca.fit_transform(x)
+#principalDf = pd.DataFrame(data = principalComponents
+#             , columns = ['pc1', 'pc2'])
+#
+#finalDf = pd.concat([principalDf, df6[['team']]], axis = 1)
+#
+#ax = principalDf.plot(x='pc1',y='pc2',style=['o'])
+#for i, txt in enumerate(df6.team):
+#    ax.annotate(txt, (principalDf.pc1.iat[i],principalDf.pc2.iat[i]))
